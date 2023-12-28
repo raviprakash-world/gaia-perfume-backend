@@ -1,9 +1,8 @@
 const express = require("express");
-const cors = require("cors");
-const app = express();
-const port = 3001;
+const serverless = require("serverless-http");
 
-app.use(cors());
+const app = express();
+const router = express.Router();
 
 // Sample perfume product data
 const perfumeData = [
@@ -58,12 +57,12 @@ const perfumeData = [
 ];
 
 // Endpoint to get all perfume products
-app.get("/product", (req, res) => {
+router.get("/product", (req, res) => {
   res.json(perfumeData);
 });
 
 // Endpoint to get a specific perfume product by ID
-app.get("/product/:id", (req, res) => {
+router.get("/product/:id", (req, res) => {
   const productId = req.params.id;
   const product = perfumeData.find((item) => item._id === productId);
 
@@ -74,7 +73,9 @@ app.get("/product/:id", (req, res) => {
   }
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// You can add more routes here if needed...
+
+app.use(`/.netlify/functions/api`, router);
+
+module.exports = app;
+module.exports.handler = serverless(app);
